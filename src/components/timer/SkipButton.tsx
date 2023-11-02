@@ -6,6 +6,9 @@ export default function SkipButton() {
 
   const handleSkipClick = () => {
     phaseActions.resetTimer();
+    setTimeout(() => {
+      phaseActions.toggleTimer();
+    }, 1000);
   };
 
   return (

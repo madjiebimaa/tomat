@@ -10,7 +10,7 @@ export const PHASE_TYPES: {
   },
   SHORT_BREAK: {
     name: 'SHORT_BREAK',
-    duration: 5 * 60 * 1000,
+    duration: 1 * 60 * 1000,
     category: 'BREAK',
   },
   LONG_BREAK: {
