@@ -12,6 +12,11 @@ export const useCountDown = (isRunning: boolean = false) => {
       if (isRunning && timer > 0) {
         phaseActions.decreaseTimer();
       }
+
+      if (isTimerStart && timer === 0) {
+        await new Audio('/audio/bell.mp3').play();
+        phaseActions.resetTimer();
+      }
     }, 1000);
 
     return () => clearInterval(interval);

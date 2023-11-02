@@ -13,6 +13,7 @@ type PhaseActions = {
     changePhase: (name: PhaseName) => void;
     decreaseTimer: () => void;
     toggleTimer: () => void;
+    resetTimer: () => void;
   };
 };
 
@@ -32,6 +33,11 @@ const phaseStore = create<PhaseState & PhaseActions>()((set) => ({
       }),
     decreaseTimer: () => set((state) => ({ timer: state.timer - 1000 })),
     toggleTimer: () => set((state) => ({ isTimerStart: !state.isTimerStart })),
+    resetTimer: () =>
+      set({
+        timer: initialState.timer,
+        isTimerStart: initialState.isTimerStart,
+      }),
   },
 }));
 

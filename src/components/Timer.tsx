@@ -23,6 +23,7 @@ export default function Timer() {
   };
 
   const handleTimerClick = async () => {
+    await new Audio('/audio/switch.mp3').play();
     phaseActions.toggleTimer();
   };
 
