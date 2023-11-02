@@ -1,8 +1,8 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Metadata } from 'next';
+import localFont from 'next/font/local';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const virgil = localFont({ src: '../../public/fonts/Virgil.woff2' });
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-red-500 ${inter.className}`}
+        className={`bg-red-500 ${virgil.className}`}
         suppressHydrationWarning
       >
         {children}
