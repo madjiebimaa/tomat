@@ -1,3 +1,5 @@
+'use client';
+
 import { BsCheckCircleFill } from 'react-icons/bs';
 
 export default function Logo() {

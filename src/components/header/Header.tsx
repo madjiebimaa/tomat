@@ -1,11 +1,14 @@
+'use client';
+
 import { BsFillPersonFill } from 'react-icons/bs';
 import { IoMdSettings } from 'react-icons/io';
 import { VscGraph } from 'react-icons/vsc';
 import HeaderButton from './HeaderButton';
 import Logo from './Logo';
+import ProgressBar from './ProgressBar';
 
 export default function Header() {
-  return (
+return (
     <>
       <header className="flex justify-between items-center">
         <Logo />
@@ -21,7 +24,7 @@ export default function Header() {
           </HeaderButton>
         </div>
       </header>
-      <hr className="border border-red-600" />
+      <ProgressBar />
     </>
   );
 }
