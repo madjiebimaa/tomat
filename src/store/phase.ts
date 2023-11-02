@@ -11,6 +11,7 @@ type PhaseState = {
 type PhaseActions = {
   actions: {
     changePhase: (name: PhaseName) => void;
+    nextPhase: () => void;
     decreaseTimer: () => void;
     toggleTimer: () => void;
     resetTimer: () => void;
@@ -23,7 +24,7 @@ const initialState: PhaseState = {
   isTimerStart: false,
 };
 
-const phaseStore = create<PhaseState & PhaseActions>()((set) => ({
+const phaseStore = create<PhaseState & PhaseActions>()((set, get) => ({
   ...initialState,
   actions: {
     changePhase: (name) =>
@@ -31,12 +32,29 @@ const phaseStore = create<PhaseState & PhaseActions>()((set) => ({
         selectedPhase: PHASE_TYPES[name],
         timer: PHASE_TYPES[name].duration,
       }),
+    nextPhase: () =>
+      set((state) => {
+        switch (state.selectedPhase) {
+          case PHASE_TYPES.POMODORO:
+            return { selectedPhase: PHASE_TYPES.SHORT_BREAK };
+          case PHASE_TYPES.SHORT_BREAK:
+            return { selectedPhase: PHASE_TYPES.LONG_BREAK };
+          case PHASE_TYPES.LONG_BREAK:
+            return { selectedPhase: PHASE_TYPES.POMODORO };
+          default:
+            return state;
+        }
+      }),
     decreaseTimer: () => set((state) => ({ timer: state.timer - 1000 })),
     toggleTimer: () => set((state) => ({ isTimerStart: !state.isTimerStart })),
     resetTimer: () =>
-      set({
-        timer: initialState.timer,
-        isTimerStart: initialState.isTimerStart,
+      set((state) => {
+        state.actions.nextPhase();
+
+        return {
+          timer: get().selectedPhase.duration,
+          isTimerStart: initialState.isTimerStart,
+        };
       }),
   },
 }));

@@ -9,6 +9,8 @@ import {
   useSelectedPhase,
 } from '@/store/phase';
 import { MouseEvent } from 'react';
+import SkipButton from './SkipButton';
+import TimerButton from './TimerButton';
 
 export default function Timer() {
   const selectedPhase = useSelectedPhase();
@@ -20,11 +22,6 @@ export default function Timer() {
     phaseActions.changePhase(
       event.currentTarget.getAttribute('data-value') as PhaseName
     );
-  };
-
-  const handleTimerClick = async () => {
-    await new Audio('/audio/switch.mp3').play();
-    phaseActions.toggleTimer();
   };
 
   const isSelectedPhase = (name: PhaseName) =>
@@ -70,13 +67,13 @@ export default function Timer() {
           })}
         </p>
       </div>
-      <div className="flex justify-center items-center">
-        <button
-          onClick={handleTimerClick}
-          className={`py-4 px-16 text-2xl font-semibold uppercase bg-white rounded-md hover:opacity-80 text-red-500`}
-        >
-          {isTimerStart ? 'pause' : 'start'}
-        </button>
+      <div className="relative flex justify-center items-center">
+        <TimerButton />
+        {isTimerStart ? (
+          <div className="absolute right-10">
+            <SkipButton />
+          </div>
+        ) : null}
       </div>
     </div>
   );
