@@ -2,6 +2,7 @@
 
 import { Task } from '@/lib/types';
 import { useSelectedTask, useTaskActions } from '@/store/task';
+import { MouseEvent } from 'react';
 import { AiFillCheckCircle } from 'react-icons/ai';
 
 interface TaskCardProps {
@@ -13,6 +14,12 @@ export default function TaskCard({ task }: TaskCardProps) {
   const taskActions = useTaskActions();
 
   const isSelectedTask = selectedTask?.id === task.id;
+  const isCompletedTask = task.isComplete;
+
+  const handleToggleTask = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    taskActions.toggleTask(task.id);
+  };
 
   return (
     <div
@@ -24,10 +31,19 @@ export default function TaskCard({ task }: TaskCardProps) {
       } cursor-pointer hover:border-l-8`}
     >
       <div className="flex items-center gap-2">
-        <button className="hover:opacity-80">
-          <AiFillCheckCircle size={30} className="text-gray-300" />
+        <button onClick={handleToggleTask} className="hover:opacity-80">
+          <AiFillCheckCircle
+            size={30}
+            className={`${isCompletedTask ? 'text-red-600' : 'text-gray-300'}`}
+          />
         </button>
-        <p className="text-red-950 font-semibold">{task.name}</p>
+        <p
+          className={`font-semibold ${
+            isCompletedTask ? 'text-gray-300 line-through' : 'text-red-950'
+          }`}
+        >
+          {task.name}
+        </p>
       </div>
       <div className="flex gap-2">
         <p className="text-gray-300 font-medium">{task.estimation}</p>
