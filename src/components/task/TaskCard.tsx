@@ -2,14 +2,18 @@
 
 import { Task } from '@/lib/types';
 import { useSelectedTask, useTaskActions } from '@/store/task';
-import { MouseEvent } from 'react';
+import { MouseEvent, useState } from 'react';
 import { AiFillCheckCircle } from 'react-icons/ai';
+import { BiDotsVertical } from 'react-icons/bi';
+import TaskModal from './TaskModal';
 
 interface TaskCardProps {
   task: Task;
 }
 
 export default function TaskCard({ task }: TaskCardProps) {
+  const [isModalShow, setIsModalShow] = useState(false);
+
   const selectedTask = useSelectedTask();
   const taskActions = useTaskActions();
 
@@ -21,10 +25,21 @@ export default function TaskCard({ task }: TaskCardProps) {
     taskActions.toggleTask(task.id);
   };
 
-  return (
+  const handleEditClick = () => {
+    setIsModalShow(true);
+  };
+
+  return isModalShow ? (
+    <TaskModal
+      id={task.id}
+      name={task.name}
+      estimation={task.estimation}
+      handleCancelClick={() => setIsModalShow(false)}
+    />
+  ) : (
     <div
       onClick={() => taskActions.selectTask(task.id)}
-      className={`flex justify-between items-center p-4 bg-white rounded-md border-l-8 ${
+      className={`flex justify-between items-center gap-4 p-4 bg-white rounded-md border-l-8 ${
         isSelectedTask
           ? 'border-red-950 hover:border-red-950'
           : 'border-transparent hover:border-gray-300'
@@ -45,8 +60,14 @@ export default function TaskCard({ task }: TaskCardProps) {
           {task.name}
         </p>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-4">
         <p className="text-gray-300 font-medium">{task.estimation}</p>
+        <button
+          onClick={handleEditClick}
+          className="flex justify-center items-center h-8 w-8 rounded-md bg-white hover:bg-gray-200 border-2 border-gray-300"
+        >
+          <BiDotsVertical size={20} className="text-gray-400" />
+        </button>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ type TaskState = {
 
 type TaskActions = {
   actions: {
-    addTask: (name: string, estimation: number) => void;
+    addTask: (id: string, name: string, estimation: number) => void;
     selectTask: (id: string) => void;
     toggleTask: (id: string) => void;
   };
@@ -22,13 +22,40 @@ const initialState: TaskState = {
 const taskStore = create<TaskState & TaskActions>()((set) => ({
   ...initialState,
   actions: {
-    addTask: (name, estimation) =>
-      set((state) => ({
-        tasks: [
-          ...state.tasks,
-          { id: crypto.randomUUID(), name, estimation, isComplete: false },
-        ],
-      })),
+    addTask: (id, name, estimation) =>
+      set((state) => {
+        const isEditTask = state.tasks.find((task) => task.id === id);
+
+        if (isEditTask) {
+          const nextTasks = state.tasks.map((task) => {
+            if (task.id === id) {
+              return {
+                ...task,
+                name,
+                estimation,
+              };
+            }
+
+            return task;
+          });
+
+          return {
+            tasks: nextTasks,
+          };
+        }
+
+        return {
+          tasks: [
+            ...state.tasks,
+            {
+              id: crypto.randomUUID(),
+              name,
+              estimation,
+              isComplete: false,
+            },
+          ],
+        };
+      }),
     selectTask: (id) =>
       set((state) => {
         const selectedTask = state.tasks.find((task) => task.id === id);

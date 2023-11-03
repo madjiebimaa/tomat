@@ -5,12 +5,20 @@ import { ChangeEvent, useState } from 'react';
 import { BiSolidDownArrow, BiSolidUpArrow } from 'react-icons/bi';
 
 interface TaskModalProps {
+  id?: string;
+  name?: string;
+  estimation?: number;
   handleCancelClick: () => void;
 }
 
-export default function TaskModal({ handleCancelClick }: TaskModalProps) {
-  const [taskName, setTaskName] = useState('');
-  const [estPomodoros, setEstPomodoros] = useState(1);
+export default function TaskModal({
+  id,
+  name,
+  estimation,
+  handleCancelClick,
+}: TaskModalProps) {
+  const [taskName, setTaskName] = useState(name ?? '');
+  const [estPomodoros, setEstPomodoros] = useState(estimation ?? 1);
   const taskActions = useTaskActions();
 
   const handleTaskNameChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -32,9 +40,10 @@ export default function TaskModal({ handleCancelClick }: TaskModalProps) {
   };
 
   const handleTaskSaveClick = () => {
-    taskActions.addTask(taskName, estPomodoros);
+    taskActions.addTask(id as string, taskName, estPomodoros);
     setTaskName('');
     setEstPomodoros(1);
+    handleCancelClick()
   };
 
   return (
