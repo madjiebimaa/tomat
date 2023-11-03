@@ -1,3 +1,5 @@
+'use client'
+
 import { useIsTimerStart, usePhaseActions } from '@/store/phase';
 
 export default function TimerButton() {

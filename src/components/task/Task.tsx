@@ -1,6 +1,9 @@
+'use client'
+
 import { BiDotsVertical } from 'react-icons/bi';
 import TaskButton from './TaskButton';
 import TaskHeader from './TaskHeader';
+import TaskList from './TaskList';
 
 export default function Task() {
   return (
@@ -13,6 +16,7 @@ export default function Task() {
         </button>
       </div>
       <hr className="border border-white my-2" />
+      <TaskList />
       <TaskButton />
     </div>
   );

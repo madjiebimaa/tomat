@@ -1,3 +1,5 @@
+'use client'
+
 import { usePhaseActions } from '@/store/phase';
 import { MdSkipNext } from 'react-icons/md';
 

@@ -7,7 +7,6 @@ import HeaderButton from './HeaderButton';
 import Logo from './Logo';
 import ProgressBar from './ProgressBar';
 
-
 export default function Header() {
   return (
     <>

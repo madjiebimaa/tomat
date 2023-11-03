@@ -1,3 +1,5 @@
+'use client'
+
 import { PHASE_TYPES } from '@/lib/constants';
 import { PhaseName } from '@/lib/types';
 import { usePhaseActions, useSelectedPhase } from '@/store/phase';
