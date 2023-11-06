@@ -17,7 +17,7 @@ export default function TaskCard({ task }: TaskCardProps) {
   const selectedTask = useSelectedTask();
   const taskActions = useTaskActions();
 
-  const isSelectedTask = selectedTask?.id === task.id;
+  const isSelectedTask = selectedTask ? selectedTask.id === task.id : false;
   const isCompletedTask = task.isComplete;
 
   const handleToggleTask = (event: MouseEvent<HTMLButtonElement>) => {
@@ -30,12 +30,7 @@ export default function TaskCard({ task }: TaskCardProps) {
   };
 
   return isModalShow ? (
-    <TaskModal
-      id={task.id}
-      name={task.name}
-      estimation={task.estimation}
-      handleCancelClick={() => setIsModalShow(false)}
-    />
+    <TaskModal task={task} handleCancelClick={() => setIsModalShow(false)} />
   ) : (
     <div
       onClick={() => taskActions.selectTask(task.id)}

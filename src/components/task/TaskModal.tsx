@@ -1,49 +1,83 @@
 'use client';
 
-import { useTaskActions } from '@/store/task';
-import { ChangeEvent, useState } from 'react';
+import { Task } from '@/lib/types';
+import { useSelectedTask, useTaskActions } from '@/store/task';
+import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { BiSolidDownArrow, BiSolidUpArrow } from 'react-icons/bi';
 
 interface TaskModalProps {
-  id?: string;
-  name?: string;
-  estimation?: number;
+  task?: Task;
   handleCancelClick: () => void;
 }
 
-export default function TaskModal({
-  id,
-  name,
-  estimation,
-  handleCancelClick,
-}: TaskModalProps) {
-  const [taskName, setTaskName] = useState(name ?? '');
-  const [estPomodoros, setEstPomodoros] = useState(estimation ?? 1);
+export default function TaskModal({ task, handleCancelClick }: TaskModalProps) {
+  const [taskName, setTaskName] = useState(task ? task.name : '');
+  const [taskEstimation, setTaskEstimation] = useState(
+    task ? task.estimation : 1
+  );
+  const selectedTask = useSelectedTask();
   const taskActions = useTaskActions();
+
+  const resetState = () => {
+    setTaskName('');
+    setTaskEstimation(1);
+  };
 
   const handleTaskNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTaskName(event.target.value);
   };
 
-  const handleEstPomodorosChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setEstPomodoros(parseInt(event.target.value));
+  const handleTaskEstimationChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setTaskEstimation(parseInt(event.target.value));
   };
 
-  const handeEstPomdorosIncrease = () => {
-    setEstPomodoros((prevState) => prevState + 1);
+  const handeIncreaseTaskEstimation = () => {
+    setTaskEstimation((prevState) => prevState + 1);
   };
 
-  const handleEstPomodorosDecrease = () => {
-    if (estPomodoros > 0) {
-      setEstPomodoros((prevState) => prevState - 1);
+  const handleDecreaseTaskEstimation = () => {
+    if (taskEstimation > 0) {
+      setTaskEstimation((prevState) => prevState - 1);
+    }
+  };
+
+  const handleTaskDeleteClick = () => {
+    if (task) {
+      taskActions.deleteTask(task.id);
     }
   };
 
   const handleTaskSaveClick = () => {
-    taskActions.addTask(id as string, taskName, estPomodoros);
-    setTaskName('');
-    setEstPomodoros(1);
-    handleCancelClick()
+    if (task) {
+      taskActions.editTask({
+        ...task,
+        name: taskName,
+        estimation: taskEstimation,
+      });
+
+      if (selectedTask && selectedTask.id === task.id) {
+        taskActions.selectTask(task.id);
+      }
+    } else {
+      taskActions.addTask(taskName, taskEstimation);
+    }
+
+    resetState();
+
+    if (task) {
+      handleCancelClick();
+    }
+  };
+
+  const handleInputOnKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleTaskSaveClick();
+    }
+
+    if (event.key === 'Escape') {
+      resetState();
+      handleCancelClick();
+    }
   };
 
   return (
@@ -54,49 +88,63 @@ export default function TaskModal({
           name="task-name"
           value={taskName}
           placeholder="What are you working on?"
+          autoComplete="off"
           onChange={handleTaskNameChange}
+          onKeyDown={handleInputOnKeyDown}
           className="py-4 text-2xl text-red-950 font-medium focus:outline-none placeholder:text-gray-300 placeholder:italic"
         />
         <p className="text-red-950 font-semibold">Est Pomodoros</p>
         <div className="flex gap-2">
           <input
             type="number"
-            name="est-pomodoros"
-            value={estPomodoros}
-            onChange={handleEstPomodorosChange}
+            name="task-estimation"
+            value={taskEstimation}
+            onChange={handleTaskEstimationChange}
+            onKeyDown={handleInputOnKeyDown}
             className="w-[70px] p-2 text-sm text-red-950 font-medium tracking-widest rounded-md bg-gray-200 focus:outline-none"
           />
           <button
             type="button"
-            onClick={handeEstPomdorosIncrease}
+            onClick={handeIncreaseTaskEstimation}
             className="bg-white py-2 px-3 rounded-md shadow-lg border-2 border-gray-400 hover:opacity-80"
           >
             <BiSolidUpArrow size={14} className="text-gray-400" />
           </button>
           <button
             type="button"
-            onClick={handleEstPomodorosDecrease}
+            onClick={handleDecreaseTaskEstimation}
             className="bg-white py-2 px-3 rounded-md shadow-lg border-2 border-gray-400 hover:opacity-80"
           >
             <BiSolidDownArrow size={14} className="text-gray-400" />
           </button>
         </div>
       </div>
-      <div className="flex justify-end gap-2 p-2 bg-gray-200">
-        <button
-          type="button"
-          onClick={handleCancelClick}
-          className="py-2 px-4 rounded-md text-gray-400 font-medium hover:text-gray-500"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleTaskSaveClick}
-          className="py-2 px-4 bg-gray-800 font-medium rounded-md text-white hover:opacity-80"
-        >
-          Save
-        </button>
+      <div className="flex justify-between p-2 bg-gray-200">
+        {task ? (
+          <button
+            type="button"
+            onClick={handleTaskDeleteClick}
+            className="py-2 px-4 rounded-md text-gray-400 font-medium hover:text-gray-500"
+          >
+            Delete
+          </button>
+        ) : null}
+        <div className="flex flex-1 justify-end gap-2">
+          <button
+            type="button"
+            onClick={handleCancelClick}
+            className="py-2 px-4 rounded-md text-gray-400 font-medium hover:text-gray-500"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleTaskSaveClick}
+            className="py-2 px-4 bg-gray-800 font-medium rounded-md text-white hover:opacity-80"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </form>
   );

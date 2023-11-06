@@ -8,7 +8,9 @@ type TaskState = {
 
 type TaskActions = {
   actions: {
-    addTask: (id: string, name: string, estimation: number) => void;
+    addTask: (name: string, estimation: number) => void;
+    editTask: (newTask: Task) => void;
+    deleteTask: (id: string) => void;
     selectTask: (id: string) => void;
     toggleTask: (id: string) => void;
   };
@@ -22,38 +24,52 @@ const initialState: TaskState = {
 const taskStore = create<TaskState & TaskActions>()((set) => ({
   ...initialState,
   actions: {
-    addTask: (id, name, estimation) =>
+    addTask: (name, estimation) =>
+      set((state) => ({
+        tasks: [
+          ...state.tasks,
+          {
+            id: crypto.randomUUID(),
+            name,
+            estimation,
+            isComplete: false,
+          },
+        ],
+      })),
+    editTask: (newTask) =>
       set((state) => {
-        const isEditTask = state.tasks.find((task) => task.id === id);
-
-        if (isEditTask) {
-          const nextTasks = state.tasks.map((task) => {
-            if (task.id === id) {
-              return {
-                ...task,
-                name,
-                estimation,
-              };
-            }
-
-            return task;
-          });
-
-          return {
-            tasks: nextTasks,
-          };
+        const taskToEdit = state.tasks.find((task) => task.id === newTask.id);
+        if (!taskToEdit) {
+          return state;
         }
 
+        const nextTasks = state.tasks.map((task) => {
+          if (task.id === taskToEdit.id) {
+            return {
+              ...task,
+              ...newTask,
+            };
+          }
+
+          return task;
+        });
+
         return {
-          tasks: [
-            ...state.tasks,
-            {
-              id: crypto.randomUUID(),
-              name,
-              estimation,
-              isComplete: false,
-            },
-          ],
+          tasks: nextTasks,
+        };
+      }),
+    deleteTask: (id) =>
+      set((state) => {
+        const taskToDelete = state.tasks.find((task) => task.id === id);
+        if (!taskToDelete) {
+          return state;
+        }
+
+        const nextTasks = state.tasks.filter(
+          (task) => task.id !== taskToDelete.id
+        );
+        return {
+          tasks: nextTasks,
         };
       }),
     selectTask: (id) =>
